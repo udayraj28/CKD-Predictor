@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKD Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-brain"></i> Chronic Kidney Disease (CKD) Prediction</h1>
+        <form action="/predict" method="post" class="form-card fade-in" autocomplete="off" id="predictionForm">
+            <!-- Numeric inputs with ranges and placeholders -->
+            <div class="form-group">
+                <label for="id"><i class="fas fa-id-badge"></i> ID (record identifier)</label>
+                <input type="number" id="id" name="id" step="1" min="1" placeholder="Unique ID" required>
+            </div>
+            <div class="form-group">
+                <label for="age"><i class="fas fa-calendar-alt"></i> Age (years)</label>
+                <input type="number" id="age" name="age" step="1" min="2" max="100" placeholder="2 - 100" required>
+            </div>
+            <div class="form-group">
+                <label for="bp"><i class="fas fa-heartbeat"></i> Blood Pressure (mm Hg)</label>
+                <input type="number" id="bp" name="bp" step="any" min="40" max="200" placeholder="40 - 200" required>
+            </div>
+            <div class="form-group">
+                <label for="bgr"><i class="fas fa-tint"></i> Blood Glucose Random (mg/dL)</label>
+                <input type="number" id="bgr" name="bgr" step="any" min="50" max="600" placeholder="50 - 600" required>
+            </div>
+            <div class="form-group">
+                <label for="bu"><i class="fas fa-flask"></i> Blood Urea (mg/dL)</label>
+                <input type="number" id="bu" name="bu" step="any" min="5" max="200" placeholder="5 - 200" required>
+            </div>
+            <div class="form-group">
+                <label for="sc"><i class="fas fa-vial"></i> Serum Creatinine (mg/dL)</label>
+                <input type="number" id="sc" name="sc" step="any" min="0.1" max="15" placeholder="0.1 - 15" required>
+            </div>
+            <div class="form-group">
+                <label for="sod"><i class="fas fa-burn"></i> Sodium (mEq/L)</label>
+                <input type="number" id="sod" name="sod" step="any" min="120" max="160" placeholder="120 - 160" required>
+            </div>
+            <div class="form-group">
+                <label for="pot"><i class="fas fa-apple-alt"></i> Potassium (mEq/L)</label>
+                <input type="number" id="pot" name="pot" step="any" min="2" max="10" placeholder="2 - 10" required>
+            </div>
+            <div class="form-group">
+                <label for="hemo"><i class="fas fa-tint"></i> Hemoglobin (g/dL)</label>
+                <input type="number" id="hemo" name="hemo" step="any" min="5" max="20" placeholder="5 - 20" required>
+            </div>
+            <div class="form-group">
+                <label for="pcv"><i class="fas fa-percentage"></i> Packed Cell Volume (%)</label>
+                <input type="number" id="pcv" name="pcv" step="any" min="10" max="60" placeholder="10 - 60" required>
+            </div>
+            <div class="form-group">
+                <label for="wc"><i class="fas fa-microscope"></i> White Blood Cell Count (cells/cumm)</label>
+                <input type="number" id="wc" name="wc" step="any" min="2000" max="20000" placeholder="2000 - 20000" required>
+            </div>
+            <div class="form-group">
+                <label for="rc"><i class="fas fa-microscope"></i> Red Blood Cell Count (million cells/cumm)</label>
+                <input type="number" id="rc" name="rc" step="any" min="2" max="8" placeholder="2 - 8" required>
+            </div>
+            <div class="form-group">
+                <label for="sg"><i class="fas fa-weight"></i> Specific Gravity</label>
+                <input type="number" id="sg" name="sg" step="0.001" min="1.005" max="1.025" placeholder="1.005 - 1.025" required>
+            </div>
+            <div class="form-group">
+                <label for="al"><i class="fas fa-flask"></i> Albumin (level 0-5)</label>
+                <input type="number" id="al" name="al" step="1" min="0" max="5" placeholder="0 - 5" required>
+            </div>
+            <div class="form-group">
+                <label for="su"><i class="fas fa-candy-cane"></i> Sugar (level 0-5)</label>
+                <input type="number" id="su" name="su" step="1" min="0" max="5" placeholder="0 - 5" required>
+            </div>
+            <!-- Dropdown inputs for categorical (encoded 0/1) -->
+            <div class="form-group">
+                <label for="rbc"><i class="fas fa-tint"></i> Red Blood Cells</label>
+                <select id="rbc" name="rbc" required>
+                    <option value="0">Normal</option>
+                    <option value="1">Abnormal</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pc"><i class="fas fa-microscope"></i> Pus Cell</label>
+                <select id="pc" name="pc" required>
+                    <option value="0">Normal</option>
+                    <option value="1">Abnormal</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pcc"><i class="fas fa-microscope"></i> Pus Cell Clumps</label>
+                <select id="pcc" name="pcc" required>
+                    <option value="0">Not Present</option>
+                    <option value="1">Present</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ba"><i class="fas fa-bacteria"></i> Bacteria</label>
+                <select id="ba" name="ba" required>
+                    <option value="0">Not Present</option>
+                    <option value="1">Present</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="htn"><i class="fas fa-heartbeat"></i> Hypertension</label>
+                <select id="htn" name="htn" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dm"><i class="fas fa-syringe"></i> Diabetes Mellitus</label>
+                <select id="dm" name="dm" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cad"><i class="fas fa-heart"></i> Coronary Artery Disease</label>
+                <select id="cad" name="cad" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="appet"><i class="fas fa-utensils"></i> Appetite</label>
+                <select id="appet" name="appet" required>
+                    <option value="0">Good</option>
+                    <option value="1">Poor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pe"><i class="fas fa-shoe-prints"></i> Pedal Edema</label>
+                <select id="pe" name="pe" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ane"><i class="fas fa-tired"></i> Anemia</label>
+                <select id="ane" name="ane" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Predict <i class="fas fa-arrow-right"></i></button>
+        </form>
+        <!-- Loading indicator -->
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing data...</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', function() {
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            
+            // Disable submit button to prevent double submission
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Analyzing... <div class="small-spinner"></div>';
+        });
+    </script>
+</body>
+</html>
