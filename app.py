@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import joblib
 import numpy as np
 import pandas as pd
+import os
 
 app = Flask(__name__)
 
@@ -96,4 +97,7 @@ def predict():
         return f"❌ Error: {str(e)}"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use the PORT environment variable provided by Render, or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    # Listen on all interfaces (0.0.0.0) instead of just localhost
+    app.run(host='0.0.0.0', port=port, debug=False)
