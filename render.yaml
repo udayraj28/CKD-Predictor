@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: ckd-predictor
+    env: python
+    buildCommand: poetry install
+    startCommand: poetry run gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.4
